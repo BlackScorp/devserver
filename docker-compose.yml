@@ -1,0 +1,45 @@
+version: "3"
+
+services: 
+  webserver:
+    container_name: webserver
+    build: webserver
+    working_dir: /code
+    restart: always
+    ports: 
+      - 80:80
+      - 443:443
+    environment:
+      - XDEBUG=${XDEBUG:-0}
+    networks:
+      - devserver
+    volumes:
+      - ./code:/code
+      - ./logs:/logs
+      - ./webserver/httpd-vhosts.conf:/etc/apache2/conf-enabled/httpd-vhosts.conf
+      - ./webserver/php-ini-overrides.ini:/usr/local/etc/php/conf.d/php-ini-overrides.ini
+
+
+  database:
+    image: mariadb:latest
+    container_name: mariadb
+    ports: 
+      - 3306:3306
+    restart: always
+    environment: 
+      - MYSQL_USER=${MYSQL_USER:-root}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-root}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-root}
+    depends_on:
+      - webserver
+    networks:
+      - devserver
+    volumes: 
+      - ./mysql:/var/lib/mysql
+
+networks:
+  devserver:
+    external: false
+    driver: bridge
+
+

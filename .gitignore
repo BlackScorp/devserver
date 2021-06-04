@@ -1,0 +1,6 @@
+code/*
+!code/domains/localhost/index.php
+logs/*
+mysql/*
+.idea
+!.gitkeep
